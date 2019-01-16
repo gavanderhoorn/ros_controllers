@@ -623,6 +623,23 @@ goalCB(GoalHandle gh)
     return;
   }
 
+
+
+
+  // TODO: begin nasty hack
+  trajectory_msgs::JointTrajectory& traj_ref = const_cast<trajectory_msgs::JointTrajectory&>(gh.getGoal()->trajectory);
+  if (traj_ref.points.size() > 0)
+  {
+    traj_ref.points.back().velocities = std::vector<double>(traj_ref.points.back().velocities.size(), 0);
+    traj_ref.points.back().accelerations = std::vector<double>(traj_ref.points.back().accelerations.size(), 0);
+    ROS_INFO_STREAM("joint_trajectory_controller: overriding vel and acc for last point: " << gh.getGoal()->trajectory.points.back());
+  }
+  // TODO: end nasty hack
+
+
+
+
+
   // Try to update new trajectory
   RealtimeGoalHandlePtr rt_goal(new RealtimeGoalHandle(gh));
   std::string error_string;
